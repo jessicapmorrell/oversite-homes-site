@@ -68,65 +68,51 @@
     revealEls.forEach((el) => el.classList.add('is-in'));
   }
 
-  /* ---------- intake form: compose mailto, show success ---------- */
+  /* ---------- intake form: submit to Formspree via fetch, show success ---------- */
   const form = document.querySelector('#intake-form');
   const successCard = document.querySelector('#form-success');
   const successEmailSpan = document.querySelector('#success-email');
   if (form && successCard) {
-    form.addEventListener('submit', (ev) => {
+    form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
-      if (!form.reportValidity()) return;
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
 
-      const data = new FormData(form);
-      const name = (data.get('name') || '').toString().trim();
-      const email = (data.get('email') || '').toString().trim();
-      const labelMap = {
-        name: 'Name',
-        email: 'Email',
-        phone: 'Phone',
-        project_type: 'Project type',
-        project_location: 'Project location',
-        project_stage: 'Project stage',
-        timeline: 'Timeline',
-        budget: 'Budget range',
-        contractor_status: 'Current contractor status',
-        concern: "Biggest concern",
-        tier: 'Service tier of interest',
-      };
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalLabel = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+      }
 
-      const lines = [];
-      Object.keys(labelMap).forEach((key) => {
-        const val = (data.get(key) || '').toString().trim();
-        lines.push(`${labelMap[key]}: ${val || '(not provided)'}`);
-      });
+      const email = (new FormData(form).get('email') || '').toString().trim();
 
-      const subject = `Project assessment request from ${name || 'website visitor'}`;
-      const body = [
-        'Hi Oversite team,',
-        '',
-        'A new project assessment request came in from the Oversite Homes website:',
-        '',
-        ...lines,
-        '',
-        '— sent via oversitehomes.com',
-      ].join('\n');
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
 
-      const mailto =
-        'mailto:oversitehomes@gmail.com' +
-        '?subject=' +
-        encodeURIComponent(subject) +
-        '&body=' +
-        encodeURIComponent(body);
-
-      // trigger the email client
-      window.location.href = mailto;
-
-      // show success state regardless (static deploy, no backend)
-      if (successEmailSpan) successEmailSpan.textContent = email || 'the email you provided';
-      form.classList.add('hidden');
-      successCard.classList.remove('hidden');
-      successCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      successCard.focus();
+        if (response.ok) {
+          if (successEmailSpan) successEmailSpan.textContent = email || 'the email you provided';
+          form.classList.add('hidden');
+          successCard.classList.remove('hidden');
+          successCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          successCard.focus();
+          form.reset();
+        } else {
+          throw new Error('Submission failed');
+        }
+      } catch (err) {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalLabel;
+        }
+        alert('Something went wrong sending your request. Please email oversitehomes@gmail.com directly and we will respond within 24 hours.');
+      }
     });
   }
 
