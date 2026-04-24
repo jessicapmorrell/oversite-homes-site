@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Upload &amp; Pay — Inspection Review — Oversite Homes</title>
+  <meta name="description" content="Upload your inspection report, pay $99, and get your written Red Flag Summary back in 2 business days. Reviewed by a licensed GC with decades of field experience." />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <meta name="theme-color" content="#F7F6F2" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=fraunces@400,500,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    /* Upload-page specific polish */
+    .upload-wrap { max-width: 680px; margin: 0 auto; }
+    .upload-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem;
+      box-shadow: var(--shadow-md);
+    }
+    @media (max-width: 640px) { .upload-card { padding: 1.5rem; } }
+    .upload-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 0 0 2.5rem;
+    }
+    @media (max-width: 640px) { .upload-steps { grid-template-columns: 1fr; } }
+    .upload-step {
+      text-align: center;
+      padding: 1.25rem 0.75rem;
+      background: var(--surface-alt);
+      border-radius: var(--radius-lg);
+    }
+    .upload-step .num {
+      display: inline-block;
+      width: 28px; height: 28px;
+      line-height: 28px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      font-family: var(--font-serif);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .upload-step h4 { font-size: 1rem; margin: 0 0 0.25rem; color: var(--teal); }
+    .upload-step p { font-size: 0.875rem; color: var(--ink-muted); margin: 0; }
+    .price-badge {
+      display: inline-block;
+      background: var(--teal);
+      color: #fff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin-bottom: 1rem;
+    }
+    .file-drop {
+      border: 2px dashed var(--line);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 1rem;
+      text-align: center;
+      background: var(--bg);
+      transition: border-color 0.2s, background 0.2s;
+      cursor: pointer;
+    }
+    .file-drop:hover, .file-drop.is-over { border-color: var(--teal); background: #fff; }
+    .file-drop input[type="file"] { display: none; }
+    .file-drop .file-name {
+      margin-top: 0.5rem;
+      font-weight: 600;
+      color: var(--teal);
+      word-break: break-all;
+    }
+    .file-drop .hint { font-size: 0.8125rem; color: var(--ink-muted); margin-top: 0.5rem; }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-top: 1px solid var(--line);
+      margin-top: 1.5rem;
+    }
+    .summary-row .total { font-family: var(--font-serif); font-size: 1.75rem; color: var(--teal); font-weight: 500; }
+    .trust-row {
+      display: flex;
+      gap: 1.25rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+      font-size: 0.8125rem;
+      color: var(--ink-muted);
+    }
+    .trust-row span { display: inline-flex; align-items: center; gap: 0.375rem; }
+    .trust-row svg { color: var(--teal); }
+    .form-note {
+      background: var(--surface-alt);
+      border-left: 3px solid var(--terra);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 0.9375rem;
+      color: var(--ink-muted);
+      margin-top: 1.5rem;
+    }
+    .submit-btn-wrap { margin-top: 1.5rem; }
+    .submit-btn-wrap .btn { width: 100%; padding: 1.125rem 1.5rem; font-size: 1.0625rem; }
+    .success-panel {
+      display: none;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      background: var(--surface-alt);
+      border-radius: var(--radius-lg);
+    }
+    .success-panel.is-visible { display: block; }
+    .success-panel h2 { color: var(--teal); margin-bottom: 0.75rem; }
+    .success-panel .big-check {
+      width: 56px; height: 56px; margin: 0 auto 1rem;
+      background: var(--teal); color: #fff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* FAQ accordion */
+    .faq-list { max-width: 760px; margin: 0 auto; }
+    .faq-item {
+      border-bottom: 1px solid var(--line);
+    }
+    .faq-item:first-child { border-top: 1px solid var(--line); }
+    .faq-item summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1.25rem 2.5rem 1.25rem 0;
+      position: relative;
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: 1.125rem;
+      color: var(--teal);
+      line-height: 1.35;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::after {
+      content: "+";
+      position: absolute;
+      right: 0.25rem;
+      top: 1.1rem;
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--terra);
+      transition: transform 0.2s var(--ease);
+      line-height: 1;
+    }
+    .faq-item[open] summary::after { content: "–"; }
+    .faq-item summary:hover { color: var(--terra); }
+    .faq-item .faq-answer {
+      padding: 0 0 1.5rem;
+      color: var(--ink-muted);
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+    .faq-item .faq-answer p { margin-bottom: 0.75rem; }
+    .faq-item .faq-answer p:last-child { margin-bottom: 0; }
+    .faq-item .fun-fact {
+      display: inline-block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--terra);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+<a class="visually-hidden" href="#main">Skip to main content</a>
+<header class="site-header">
+  <div class="container nav-inner">
+    <a href="index.html" class="brand" aria-label="Oversite Homes home">
+      <svg viewBox="0 0 220 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <g transform="translate(0,2)">
+    <circle cx="15" cy="16" r="13" fill="none" stroke="#1B474D" stroke-width="1.8"/>
+    <line x1="3" y1="16" x2="27" y2="16" stroke="#A84B2F" stroke-width="1.6" stroke-linecap="round"/>
+  </g>
+  <text x="40" y="21" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="22" fill="#1B474D" letter-spacing="-0.5">Oversite</text>
+  <text x="40" y="33" font-family="Inter, sans-serif" font-weight="600" font-size="8" fill="#5A5A5A" letter-spacing="2">GC CONSULTANT</text>
+</svg>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle menu">
+      <span></span>
+    </button>
+    <nav class="primary-nav" id="primary-nav" aria-label="Primary">
+      <ul>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="inspection-review.html">Inspection Review</a></li>
+        <li><a href="process.html">Process</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="partnership.html">Partnership</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <a href="contact.html" class="btn btn-primary nav-cta">Contact</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <header class="page-header">
+    <div class="container">
+      <p class="eyebrow reveal is-in">Inspection Review</p>
+      <h1 class="reveal is-in">Upload. Pay $99. Get answers in 2 days.</h1>
+      <p class="lede reveal is-in">A licensed GC will read every page of your inspection report and send back a clear, written Red Flag Summary &mdash; what&rsquo;s urgent, what&rsquo;s cosmetic, real repair ranges, and what to negotiate before you close.</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <div class="upload-wrap">
+
+        <!-- Steps -->
+        <div class="upload-steps reveal is-in">
+          <div class="upload-step">
+            <div class="num">1</div>
+            <h4>Upload</h4>
+            <p>Drop in your report PDF</p>
+          </div>
+          <div class="upload-step">
+            <div class="num">2</div>
+            <h4>Pay $99</h4>
+            <p>Secure checkout via Stripe</p>
+          </div>
+          <div class="upload-step">
+            <div class="num">3</div>
+            <h4>Get your review</h4>
+            <p>In your inbox in 2 business days</p>
+          </div>
+        </div>
+
+        <!-- Form card -->
+        <div class="upload-card reveal is-in" id="form-card">
+          <span class="price-badge">Flat fee · $99</span>
+
+          <form id="upload-form" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
+            <!-- Web3Forms access key - user will replace this -->
+            <input type="hidden" name="access_key" value="YOUR-WEB3FORMS-ACCESS-KEY" />
+            <input type="hidden" name="subject" value="New inspection report upload — Oversite Homes ($99)" />
+            <input type="hidden" name="from_name" value="Oversite Homes — Inspection Upload" />
+            <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
+
+            <div class="field">
+              <label for="u-email">Your email<span class="req" aria-hidden="true">*</span></label>
+              <input id="u-email" name="email" type="email" autocomplete="email" required placeholder="you@domain.com" />
+            </div>
+
+            <div class="field" style="margin-top: 1.25rem;">
+              <label>Upload your inspection report<span class="req" aria-hidden="true">*</span></label>
+              <label class="file-drop" for="u-file" id="file-drop">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 0.5rem; color: var(--teal);" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <div><strong>Click to choose</strong> or drag your PDF here</div>
+                <div class="file-name" id="file-name" aria-live="polite"></div>
+                <div class="hint">PDF, JPG, or PNG &middot; up to 10MB</div>
+                <input id="u-file" name="inspection_report" type="file" accept=".pdf,.jpg,.jpeg,.png" required />
+              </label>
+            </div>
+
+            <div class="field" style="margin-top: 1.25rem;">
+              <label for="u-notes">Anything we should know? <small style="display:inline; color:var(--ink-muted); font-weight:400;">(optional)</small></label>
+              <textarea id="u-notes" name="notes" placeholder="Property address, closing date, specific concerns, anything rushing the timeline&hellip;" rows="4"></textarea>
+            </div>
+
+            <div class="summary-row">
+              <span style="color: var(--ink-muted);">Inspection report review</span>
+              <span class="total">$99</span>
+            </div>
+
+            <div class="form-note">
+              <strong>How it works:</strong> Your report uploads first, then you&rsquo;re taken to secure checkout to pay $99. Once payment clears, we start the review. You&rsquo;ll get your Red Flag Summary by email within 2 business days.
+            </div>
+
+            <div class="submit-btn-wrap">
+              <button type="submit" class="btn btn-primary" id="submit-btn">
+                Upload &amp; continue to payment &rarr;
+              </button>
+            </div>
+
+            <div class="trust-row">
+              <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Secure upload
+              </span>
+              <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                48-hour turnaround
+              </span>
+              <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+                Reviewed by a licensed GC
+              </span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Success panel (shown after form submit) -->
+        <div class="success-panel" id="success-panel">
+          <div class="big-check">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h2>Report received. Last step: payment.</h2>
+          <p style="margin-bottom: 1.5rem;">Your report is in. Click below to pay $99 and we&rsquo;ll start your review. You&rsquo;ll get your Red Flag Summary by email within 2 business days.</p>
+          <!-- STRIPE: Replace href below with your Stripe Payment Link URL -->
+          <a href="https://buy.stripe.com/REPLACE-WITH-YOUR-STRIPE-LINK" id="pay-link" class="btn btn-primary" style="padding: 1rem 2rem;">Pay $99 securely &rarr;</a>
+          <p style="margin-top: 1.5rem; color: var(--ink-muted); font-size: 0.875rem;">Secure payment via Stripe. We never see your card details.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Reassurance band -->
+  <section class="tight" style="background: var(--surface-alt);">
+    <div class="container">
+      <div style="max-width: 720px; margin: 0 auto; text-align: center;">
+        <p class="eyebrow">Why people trust Oversite</p>
+        <h2 style="margin-bottom: 1rem;">A real builder reads your report. Not a bot.</h2>
+        <p class="lede">Every review is done by a licensed general contractor with decades of field experience. No AI summaries, no copy-paste templates, no outsourced work. Just a clear, simplified breakdown of what the report actually means &mdash; and what to do about it.</p>
+        <p style="margin-top: 2rem;"><a href="inspection-review.html" class="link-arrow">Learn more about the review <span class="arrow">&rarr;</span></a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQs about inspection reports -->
+  <section>
+    <div class="container">
+      <div class="section-head reveal is-in" style="text-align: center; max-width: 720px; margin: 0 auto 3rem;">
+        <p class="eyebrow">Things you should know</p>
+        <h2>Inspection reports: the stuff nobody tells you.</h2>
+        <p class="lede">A few honest answers to questions buyers actually ask &mdash; plus a few fun facts about what&rsquo;s really in that 40-page document.</p>
+      </div>
+
+      <div class="faq-list reveal is-in">
+
+        <details class="faq-item">
+          <summary>How long is a typical home inspection report?</summary>
+          <div class="faq-answer">
+            <span class="fun-fact">Fun fact</span>
+            <p>Most inspection reports run 30 to 80 pages. The average is around 45. That&rsquo;s a lot of reading when you&rsquo;re trying to close on a house in two weeks.</p>
+            <p>And here&rsquo;s the thing: most reports have 30 to 60 flagged items. That sounds alarming &mdash; but inspectors are trained to note everything, from a missing smoke detector battery to a cracked foundation. A good review separates the five things that matter from the fifty-five that don&rsquo;t.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Why do reports make everything sound scary?</summary>
+          <div class="faq-answer">
+            <p>Inspectors have legal liability. If they miss something, they get sued. So they flag everything defensively &mdash; and the language is often technical, hedged, or alarming on purpose.</p>
+            <p>&ldquo;Moisture intrusion observed&rdquo; could mean a serious leak or a splash stain from last week&rsquo;s storm. &ldquo;Recommend further evaluation by a licensed professional&rdquo; is the most common phrase in any report &mdash; and it appears on both critical findings and minor ones. Someone who actually builds homes can tell the difference. That&rsquo;s what we do.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What don&rsquo;t inspectors check?</summary>
+          <div class="faq-answer">
+            <span class="fun-fact">Fun fact</span>
+            <p>A standard home inspection is a visual, non-invasive walkthrough. Inspectors typically do <em>not</em> check:</p>
+            <p>&middot; Inside walls or behind finished surfaces<br/>
+            &middot; Sewer lines or septic systems (separate inspection)<br/>
+            &middot; Chimney interiors (separate inspection)<br/>
+            &middot; Pools, spas, or detached structures in detail<br/>
+            &middot; Cosmetic or code-compliance issues<br/>
+            &middot; Anything above arm&rsquo;s reach if not safely accessible</p>
+            <p>That means a clean report isn&rsquo;t a clean bill of health. A GC review reads <em>between</em> the lines &mdash; what was skipped, what should have been flagged, and what&rsquo;s likely hiding based on the home&rsquo;s age and style.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Which red flags actually matter most?</summary>
+          <div class="faq-answer">
+            <p>The expensive ones, ranked roughly in order of pain:</p>
+            <p>&middot; <strong>Foundation &amp; structural</strong> &mdash; cracks beyond hairline, bowing, settling ($5K&ndash;$50K+)<br/>
+            &middot; <strong>Roof age &amp; condition</strong> &mdash; past 80% of life ($8K&ndash;$30K)<br/>
+            &middot; <strong>HVAC at end of life</strong> &mdash; systems 15+ years old ($6K&ndash;$15K)<br/>
+            &middot; <strong>Electrical panel issues</strong> &mdash; Federal Pacific, Zinsco, undersized ($2K&ndash;$8K)<br/>
+            &middot; <strong>Sewer line</strong> &mdash; cast iron or clay in older homes ($3K&ndash;$25K)<br/>
+            &middot; <strong>Water intrusion</strong> &mdash; active or historical ($500&ndash;$40K)</p>
+            <p>What to ignore? Missing outlet covers, loose handrails, minor caulk gaps, the inspector&rsquo;s note that the 20-year-old dishwasher &ldquo;may need future replacement.&rdquo; Those are negotiation noise, not deal breakers.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Can I just ask AI to summarize my report?</summary>
+          <div class="faq-answer">
+            <p>You can, and a lot of people do. Here&rsquo;s what AI is good at: pulling out keywords, listing flagged items, writing a neat summary.</p>
+            <p>Here&rsquo;s what it can&rsquo;t do: know that the &ldquo;minor efflorescence on basement wall&rdquo; photo actually shows early water intrusion that&rsquo;ll cost you $12K in three years. Or that the 30-year roof the report flagged still has eight good years left because it&rsquo;s architectural shingle, not 3-tab. AI reads the words. A builder reads the <em>house</em>.</p>
+            <p>For a $99 second opinion before you close on a house worth hundreds of thousands, a real person&rsquo;s eyes are worth it.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How much do buyers usually negotiate off after an inspection?</summary>
+          <div class="faq-answer">
+            <span class="fun-fact">Fun fact</span>
+            <p>In a balanced market, buyers who negotiate after inspection save an average of 1&ndash;3% of the purchase price. On a $500K home, that&rsquo;s $5,000 to $15,000. On a $1M home, $10K to $30K.</p>
+            <p>But here&rsquo;s the catch: most buyers either negotiate nothing (because the report overwhelmed them) or ask for the wrong things (cosmetic items the seller laughs off). A GC review gives you a short, specific list of what to ask for &mdash; and the reasoning behind each item &mdash; so your agent can actually use it.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What&rsquo;s the weirdest thing you&rsquo;ve seen in an inspection report?</summary>
+          <div class="faq-answer">
+            <span class="fun-fact">Fun fact</span>
+            <p>A few favorites: a &ldquo;bee-shaped water stain&rdquo; on a ceiling that turned out to be an actual beehive in the attic. A home where the &ldquo;unusual humming from basement&rdquo; was an old, forgotten grow operation. And the classic &mdash; a kitchen island hiding a hole in the floor that the seller had covered with a rug for 14 years.</p>
+            <p>Inspectors catch these. Builders know what they mean. The beehive was a $4K remediation. The grow operation meant rewiring the entire basement. The hole was termite damage that spread to three joists.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>If the inspector already flagged everything, why pay for a review?</summary>
+          <div class="faq-answer">
+            <p>Because flagging isn&rsquo;t the same as explaining. An inspector tells you <em>what</em> they saw. A builder tells you <em>what it means</em>, <em>what it costs</em>, and <em>what to do about it.</em></p>
+            <p>Three different jobs:</p>
+            <p>&middot; <strong>Inspector</strong> &mdash; identifies and documents visible issues<br/>
+            &middot; <strong>Contractor</strong> &mdash; bids on fixing specific items (motivated to upsell)<br/>
+            &middot; <strong>Independent GC review</strong> &mdash; translates the report, prices reality, and tells you what to negotiate &mdash; with no stake in who does the work</p>
+            <p>The whole point of Oversite is that we don&rsquo;t bid on your repairs. So when we tell you something&rsquo;s fine, it&rsquo;s actually fine. And when we tell you to push back, we mean it.</p>
+          </div>
+        </details>
+
+      </div>
+
+      <div style="text-align: center; margin-top: 3rem;">
+        <a href="#form-card" class="btn btn-primary">Upload your report &amp; get started</a>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="brand"><svg viewBox="0 0 220 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <g transform="translate(0,2)">
+    <circle cx="15" cy="16" r="13" fill="none" stroke="#FFFFFF" stroke-width="1.8"/>
+    <line x1="3" y1="16" x2="27" y2="16" stroke="#A84B2F" stroke-width="1.6" stroke-linecap="round"/>
+  </g>
+  <text x="40" y="21" font-family="Fraunces, Georgia, serif" font-weight="500" font-size="22" fill="#FFFFFF" letter-spacing="-0.5">Oversite</text>
+  <text x="40" y="33" font-family="Inter, sans-serif" font-weight="600" font-size="8" fill="rgba(255,255,255,0.6)" letter-spacing="2">GC CONSULTANT</text>
+</svg></div>
+        <p class="tagline">Independent oversight.<br/>Protected investment.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="inspection-review.html">Inspection review</a></li>
+          <li><a href="process.html">Process</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="partnership.html">Partnership</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:oversitehomes@gmail.com">oversitehomes@gmail.com</a></li>
+          <li><a href="contact.html">Request a call</a></li>
+          <li>Nationwide · remote-first</li>
+        </ul>
+      </div>
+      <p class="legal">© 2026 Oversite Homes. Independent third-party general contracting consultation. Not a licensed general contractor in any state; we provide consultation and review services only.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Filename display + drag/drop polish
+  (function(){
+    var input = document.getElementById('u-file');
+    var label = document.getElementById('file-drop');
+    var nameOut = document.getElementById('file-name');
+    if (!input || !label) return;
+
+    input.addEventListener('change', function(){
+      if (input.files && input.files[0]) {
+        nameOut.textContent = input.files[0].name;
+      }
+    });
+    ['dragenter','dragover'].forEach(function(ev){
+      label.addEventListener(ev, function(e){ e.preventDefault(); label.classList.add('is-over'); });
+    });
+    ['dragleave','drop'].forEach(function(ev){
+      label.addEventListener(ev, function(e){ e.preventDefault(); label.classList.remove('is-over'); });
+    });
+    label.addEventListener('drop', function(e){
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+        input.files = e.dataTransfer.files;
+        nameOut.textContent = e.dataTransfer.files[0].name;
+      }
+    });
+  })();
+
+  // Intercept form submit: upload to Web3Forms, then redirect to Stripe
+  (function(){
+    var form = document.getElementById('upload-form');
+    var card = document.getElementById('form-card');
+    var success = document.getElementById('success-panel');
+    var submitBtn = document.getElementById('submit-btn');
+    var payLink = document.getElementById('pay-link');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Uploading report…';
+
+      try {
+        var fd = new FormData(form);
+        var res = await fetch(form.action, { method: 'POST', body: fd });
+        var json = await res.json().catch(function(){ return {}; });
+
+        if (res.ok) {
+          // Hide the form card, show success panel
+          card.style.display = 'none';
+          success.classList.add('is-visible');
+          window.scrollTo({ top: success.offsetTop - 80, behavior: 'smooth' });
+          // Auto-forward to Stripe after a short pause so user sees confirmation
+          // Commented out — let user click manually for clarity
+          // setTimeout(function(){ window.location.href = payLink.href; }, 2500);
+        } else {
+          throw new Error((json && json.message) || 'Upload failed. Please try again or email oversitehomes@gmail.com.');
+        }
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Upload & continue to payment →';
+        alert(err.message || 'Something went wrong. Please try again.');
+      }
+    });
+  })();
+</script>
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>
