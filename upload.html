@@ -243,8 +243,7 @@
           <span class="price-badge">Flat fee · $99</span>
 
           <form id="upload-form" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
-            <!-- Web3Forms access key - user will replace this -->
-            <input type="hidden" name="access_key" value="f7ebfbea-5fc2-4a9f-b04b-966e59b1aa61" />
+            <input type="hidden" name="access_key" value="5c78508b-543c-4681-ac5d-ce4050d9d4b9" />
             <input type="hidden" name="subject" value="New inspection report upload — Oversite Homes ($99)" />
             <input type="hidden" name="from_name" value="Oversite Homes — Inspection Upload" />
             <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
@@ -506,13 +505,12 @@
     });
   })();
 
-  // Intercept form submit: upload to Web3Forms, then redirect to Stripe
+  // Intercept form submit: upload to Web3Forms, then show success panel with Stripe link
   (function(){
     var form = document.getElementById('upload-form');
     var card = document.getElementById('form-card');
     var success = document.getElementById('success-panel');
     var submitBtn = document.getElementById('submit-btn');
-    var payLink = document.getElementById('pay-link');
     if (!form) return;
 
     form.addEventListener('submit', async function(e){
@@ -526,13 +524,9 @@
         var json = await res.json().catch(function(){ return {}; });
 
         if (res.ok) {
-          // Hide the form card, show success panel
           card.style.display = 'none';
           success.classList.add('is-visible');
           window.scrollTo({ top: success.offsetTop - 80, behavior: 'smooth' });
-          // Auto-forward to Stripe after a short pause so user sees confirmation
-          // Commented out — let user click manually for clarity
-          // setTimeout(function(){ window.location.href = payLink.href; }, 2500);
         } else {
           throw new Error((json && json.message) || 'Upload failed. Please try again or email oversitehomes@gmail.com.');
         }
